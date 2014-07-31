@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="RecipeGuideModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Recipe">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nationality" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsVegetarian" Type="bit" Nullable="false" />
+          <Property Name="IsGlutenFree" Type="bit" Nullable="false" />
+          <Property Name="PrepTime" Type="int" />
+          <Property Name="CookTime" Type="int" />
+          <Property Name="NbrOfPeople" Type="int" />
+          <Property Name="NbrOfSteps" Type="int" />
+        </EntityType>
+        <EntityType Name="RecipeIngredientJoin">
+          <Key>
+            <PropertyRef Name="RecipeID" />
+            <PropertyRef Name="IngredientID" />
+          </Key>
+          <Property Name="RecipeID" Type="int" Nullable="false" />
+          <Property Name="IngredientID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_RecipeIngredientJoin_Ingredient">
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="1" />
+          <End Role="RecipeIngredientJoin" Type="Self.RecipeIngredientJoin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipeIngredientJoin">
+              <PropertyRef Name="IngredientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecipeIngredientJoin_Recipe">
+          <End Role="Recipe" Type="Self.Recipe" Multiplicity="1" />
+          <End Role="RecipeIngredientJoin" Type="Self.RecipeIngredientJoin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Recipe">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RecipeIngredientJoin">
+              <PropertyRef Name="RecipeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="RecipeGuideModelStoreContainer">
+          <EntitySet Name="Ingredient" EntityType="Self.Ingredient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Recipe" EntityType="Self.Recipe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecipeIngredientJoin" EntityType="Self.RecipeIngredientJoin" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_RecipeIngredientJoin_Ingredient" Association="Self.FK_RecipeIngredientJoin_Ingredient">
+            <End Role="Ingredient" EntitySet="Ingredient" />
+            <End Role="RecipeIngredientJoin" EntitySet="RecipeIngredientJoin" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecipeIngredientJoin_Recipe" Association="Self.FK_RecipeIngredientJoin_Recipe">
+            <End Role="Recipe" EntitySet="Recipe" />
+            <End Role="RecipeIngredientJoin" EntitySet="RecipeIngredientJoin" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="RecipeGuideModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Recipes" Relationship="Self.RecipeIngredientJoin" FromRole="Ingredient" ToRole="Recipe" />
+        </EntityType>
+        <EntityType Name="Recipe">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Nationality" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsVegetarian" Type="Boolean" Nullable="false" />
+          <Property Name="IsGlutenFree" Type="Boolean" Nullable="false" />
+          <Property Name="PrepTime" Type="Int32" />
+          <Property Name="CookTime" Type="Int32" />
+          <Property Name="NbrOfPeople" Type="Int32" />
+          <Property Name="NbrOfSteps" Type="Int32" />
+          <NavigationProperty Name="Ingredients" Relationship="Self.RecipeIngredientJoin" FromRole="Recipe" ToRole="Ingredient" />
+        </EntityType>
+        <Association Name="RecipeIngredientJoin">
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="*" />
+          <End Role="Recipe" Type="Self.Recipe" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="RecipeGuideEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Ingredients" EntityType="Self.Ingredient" />
+          <EntitySet Name="Recipes" EntityType="Self.Recipe" />
+          <AssociationSet Name="RecipeIngredientJoin" Association="Self.RecipeIngredientJoin">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="Recipe" EntitySet="Recipes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="RecipeGuideModelStoreContainer" CdmEntityContainer="RecipeGuideEntities">
+          <EntitySetMapping Name="Ingredients">
+            <EntityTypeMapping TypeName="RecipeGuideModel.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredient">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Recipes">
+            <EntityTypeMapping TypeName="RecipeGuideModel.Recipe">
+              <MappingFragment StoreEntitySet="Recipe">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Nationality" ColumnName="Nationality" />
+                <ScalarProperty Name="IsVegetarian" ColumnName="IsVegetarian" />
+                <ScalarProperty Name="IsGlutenFree" ColumnName="IsGlutenFree" />
+                <ScalarProperty Name="PrepTime" ColumnName="PrepTime" />
+                <ScalarProperty Name="CookTime" ColumnName="CookTime" />
+                <ScalarProperty Name="NbrOfPeople" ColumnName="NbrOfPeople" />
+                <ScalarProperty Name="NbrOfSteps" ColumnName="NbrOfSteps" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="RecipeIngredientJoin" TypeName="RecipeGuideModel.RecipeIngredientJoin" StoreEntitySet="RecipeIngredientJoin">
+            <EndProperty Name="Ingredient">
+              <ScalarProperty Name="ID" ColumnName="IngredientID" />
+            </EndProperty>
+            <EndProperty Name="Recipe">
+              <ScalarProperty Name="ID" ColumnName="RecipeID" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
